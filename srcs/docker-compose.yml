@@ -1,0 +1,16 @@
+version: '3'
+
+networks:
+    nginx-network:
+
+services:
+  nginx:
+    container_name: nginx
+    build:
+      context:  ./requirements/nginx
+    image:   nginx
+    networks:
+      - nginx-network
+    ports:
+      - "443:443"
+    restart: unless-stopped
