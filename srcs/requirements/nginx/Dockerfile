@@ -31,7 +31,9 @@ RUN     openssl req \
         # Generated key will be 4096 bits
 RUN     openssl dhparam -out /etc/nginx/dhparam.pem 1048
 
-COPY   ./conf/nginx-ssl.conf /etc/nginx/snippets/self-signed.conf 
+COPY   ./conf/nginx-self-signed.conf /etc/nginx/snippets/self-signed.conf 
+
+COPY   ./conf/nginx-ssl-params.conf /etc/nginx/snippets/ssl-params.conf
 
 # Expose the port 443 (standard port for SSL)
 EXPOSE  443
