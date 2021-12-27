@@ -10,6 +10,7 @@ RUN     apk add --update nginx
 RUN     apk add --update openssl
 # Create a self signed certificate using OpenSSL
         # use X.509 standard
+
 RUN     openssl req \
         # create a self signed certificate instead of a signing request
         -x509 \
@@ -34,6 +35,8 @@ RUN     openssl dhparam -out /etc/nginx/dhparam.pem 1048
 COPY   ./conf/nginx-self-signed.conf /etc/nginx/snippets/self-signed.conf 
 
 COPY   ./conf/nginx-ssl-params.conf /etc/nginx/snippets/ssl-params.conf
+
+COPY   ./conf/nginx.conf /etc/nginx/sites-available/sshakya.42.fr
 
 # Expose the port 443 (standard port for SSL)
 EXPOSE  443
