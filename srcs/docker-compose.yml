@@ -1,14 +1,11 @@
-version: '3'
+version: '3.8'
 
 volumes:
   mariadb-volume:
   wordpress-volume:
 
 networks:
-  nginx-network:
-  mariadb-network:
-  wordpress-network:
-
+  wp-network:
 services:
   nginx:
     container_name: nginx
@@ -17,9 +14,11 @@ services:
     volumes:
       - wordpress-volume:/var/www/${WP_SITE}
     networks:
-      - nginx-network
+      - wp-network
     ports:
       - "443:443"
+    depends_on:
+      - mariadb
     #restart: unless-stopped
   mariadb:
     container_name: MariaDB
@@ -28,7 +27,7 @@ services:
     volumes:
       - mariadb-volume:/var/lib/mysql
     networks:
-      - mariadb-network
+      - wp-network
     environment:
       - MARIADB_ROOT=${MARIADB_ROOT}
       - MARIADB_ROOT_PWD=${MARIADB_ROOT_PWD}
@@ -40,31 +39,26 @@ services:
     build:
       context:  ./requirements/wordpress
       args:
-      - MARIADB_USER=${MARIADB_USER}
-      - MARIADB_USER_PWD=${MARIADB_USER_PWD}
-      - WP_URL=${WP_URL}
-      - WP_DB=${WP_DB}
-      - WP_SITE=sshakya.42.fr
-      - WP_SITE_TITLE=${WP_SITE_TITLE}
-      - WP_ADMIN=${WP_ADMIN}
-      - WP_ADMIN_PWD=${WP_ADMIN_PWD}
-      - WP_ADMIN_EMAIL=${WP_ADMIN_EMAIL}
-      - WP_USER=${WP_USER}
-      - WP_USER_PWD=${WP_USER_PWD}
-      - WP_USER_EMAIL=${WP_USER_EMAIL}
+        # SITE
+        - WP_URL=${WP_URL}
+        - WP_DB=${WP_DB}
+        - WP_SITE=${WP_SITE}
+        - WP_SITE_TITLE=${WP_SITE_TITLE}
+        # USERS
+        - WP_ADMIN=${WP_ADMIN}
+        - WP_ADMIN_PWD=${WP_ADMIN_PWD}
+        - WP_ADMIN_EMAIL=${WP_ADMIN_EMAIL}
+        - WP_USER=${WP_USER}
+        - WP_USER_PWD=${WP_USER_PWD}
+        - WP_USER_EMAIL=${WP_USER_EMAIL}
+        # DATABASE ARGS
+        - MARIADB_USER=${MARIADB_USER}
+        - MARIADB_USER_PWD=${MARIADB_USER_PWD}
+    volumes:
+    - wordpress-volume:/var/www/${WP_SITE}
     networks:
-      - wordpress-network
-    environment:
-      - MARIADB_USER=${MARIADB_USER}
-      - MARIADB_USER_PWD=${MARIADB_USER_PWD}
-      - WP_URL=${WP_URL}
-      - WP_DB=${WP_DB}
-      - WP_SITE=${WP_SITE}
-      - WP_SITE_TITLE=${WP_SITE_TITLE}
-      - WP_ADMIN=${WP_ADMIN}
-      - WP_ADMIN_PWD=${WP_ADMIN_PWD}
-      - WP_ADMIN_EMAIL=${WP_ADMIN_EMAIL}
-      - WP_USER=${WP_USER}
-      - WP_USER_PWD=${WP_USER_PWD}
-      - WP_USER_EMAIL=${WP_USER_EMAIL}
+      - wp-network
+    depends_on:
+      - mariadb
+      - nginx
     #restart: unless-stopped

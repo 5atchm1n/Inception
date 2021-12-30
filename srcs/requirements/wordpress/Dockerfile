@@ -14,17 +14,6 @@ RUN     apk add --update    php-curl php-gd php-intl \
                             php-openssl
 #RUN     rc-service php-fpm7 restart
 # Set args that Dockerfile will get from compose yaml
-ARG WP_DB
-ARG MARIADB_USER
-ARG MARIADB_USER_PWD
-ARG WP_URL
-ARG WP_SITE
-ARG WP_ADMIN
-ARG WP_ADMIN_PWD
-ARG WP_ADMIN_EMAIL
-ARG WP_USER
-ARG WP_USER_PWD
-ARG WP_USER_EMAIL
 # Install Wordpress CLI tool
 RUN     wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
 # Make the .phar file executable
@@ -34,20 +23,32 @@ RUN     mv wp-cli.phar /usr/local/bin/wp
 # Test that CLI is functioning correctly
 RUN     wp --info
 # Create directory for wordpress
-#RUN     mkdir -p /var/www/$WP_SITE/html
+ARG     WP_DIR
+ARG     MARIADB_USER
+ARG     MARIADB_USER_PWD
+ARG     WP_DB
 # Download Wordpress to directory
-#RUN     cd /var/www/$WP_SITE/html
+RUN     mkdir -p $WP_DIR/html
 # Change directory to wordpress dir
-#RUN     wp core download --locale=en_US
-RUN     echo ${WP_SITE}
+RUN     wp core download --locale=en_US --path=$WP_DIR/html
 # Setup wp_config file
-RUN     wp config create --dbname=$WP_DB \
-                        --dbuser=$MARIADB_USER \
-                        --dppass=$MARIADB_USER_PWD \
+RUN     wp config create --path=$WP_DIR/html\
+                        --dbname=${WP_DB} \
+                        --dbuser=${MARIADB_USER} \
+                        --dbpass=$MARIADB_USER_PWD \
                         --locale=en_EN
 RUN     wp db create
+# Dockerfile variables
+ARG     WP_URL
+ARG     WP_ADMIN
+ARG     WP_ADMIN_PWD
+ARG     WP_ADMIN_EMAIL
+ARG     WP_USER
+ARG     WP_USER_PWD
+ARG     WP_USER_EMAIL
 # Install Wordpress via WP-CLI
-RUN     wp core install --url=$WP_URL \
+RUN     wp core install --path=$WP_DIR/html \
+                        --url=$WP_URL \
                         --title=Inception \
                         --admin_user=$WP_ADMIN \
                         --admin_password=$WP_ADMIN_PWD \
