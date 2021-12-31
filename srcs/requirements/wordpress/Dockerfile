@@ -4,7 +4,7 @@ FROM    alpine:3.14
 # Alpine package manager
 RUN     apk update
 # Install wget package
-RUN     apk add --update wget openrc
+RUN     apk add --update wget openrc mariadb-client
 # Install basic php packages
 RUN     apk add --update php php-fpm php-mysqli php-common php-cli php-phar
 # Install necessary ph packages to run Wordpress
