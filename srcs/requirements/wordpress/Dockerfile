@@ -4,15 +4,25 @@ FROM    alpine:3.14
 # Alpine package manager
 RUN     apk update
 # Install wget package
-RUN     apk add --update wget openrc mariadb-client
+RUN     apk add --update    mariadb-client \
+                            wget \
+                            openrc
 # Install basic php packages
-RUN     apk add --update php php-fpm php-mysqli php-common php-cli php-phar
+RUN     apk add --update    php php-fpm \
+                            php-mysqli \
+                            php-common \
+                            php-cli \
+                            php-phar
 # Install necessary ph packages to run Wordpress
 RUN     apk add --update    php-curl php-gd php-intl \
                             php-mbstring php-soap php-xml \
                             php-xmlrpc php-zip php-json \
                             php-openssl
-#RUN     rc-service php-fpm7 restart
+# Copy conf files
+COPY    ./conf/php-fpm.conf     /etc/php7/php-fpm.conf
+COPY    ./conf/www.conf         /etc/php7/php-fpm.d/www.conf
+# Run php-fpm
+RUN     rc-update add php-fpm7
 # Set args that Dockerfile will get from compose yaml
 # Install Wordpress CLI tool
 RUN     wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar

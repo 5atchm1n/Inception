@@ -5,7 +5,10 @@ FROM    alpine:3.14
 # Alpine package manager APK
 RUN     apk update
 # Install and update MariaDB latest
-RUN     apk add --update mariadb mariadb-client openrc
+RUN     apk add --update mariadb mariadb-client 
+RUN     apk add --update openrc
+RUN     apk add --update mariadb-openrc
+
 # Create runtime directory on Docker volume
 RUN     mkdir -p /var/lib/mysql/run
 # Setup MairaDB runtime directory and auth method
@@ -16,8 +19,9 @@ RUN     mariadb-install-db --datadir=/var/lib/mysql \
 RUN     chown -R mysql:mysql /var/lib/mysql
 # Copy conf and init files to server
 COPY	conf/mariadb.conf /etc/my.cnf.d/mariadb-server.cnf
-COPY	conf/mariadb.init /
-COPY	tools/entrypoint.sh /
-# START MYSQL
+COPY	conf/mariadb.init   /init.sql
 
-ENTRYPOINT	["sh" ,"entrypoint.sh"]
+RUN     /usr/bin/mysqld_safe & \
+        mariadb < init.sql
+
+ENTRYPOINT  ["sh", "-c", "/usr/bin/mysqld_safe"]

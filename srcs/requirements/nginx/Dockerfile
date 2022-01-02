@@ -41,4 +41,4 @@ COPY   ./conf/nginx.conf /etc/nginx/sites-available/sshakya.42.fr
 # Expose the port 443 (standard port for SSL)
 EXPOSE  443
 
-#CMD     ["nginx", "-g", "deamon off;"]
+CMD     ["nginx", "-g", "deamon off;"]
