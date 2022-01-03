@@ -19,9 +19,12 @@ RUN     mariadb-install-db --datadir=/var/lib/mysql \
 RUN     chown -R mysql:mysql /var/lib/mysql
 # Copy conf and init files to server
 COPY	conf/mariadb.conf /etc/my.cnf.d/mariadb-server.cnf
+# Database setup
 COPY	conf/mariadb.init   /init.sql
 
-RUN     /usr/bin/mysqld_safe & \
-        mariadb < init.sql
+RUN sh -c "/usr/bin/mysqld_safe &" && \
+  sleep 5 && \
+  echo "done" && \
+  mysql -u root < init.sql
 
 ENTRYPOINT  ["sh", "-c", "/usr/bin/mysqld_safe"]

@@ -10,7 +10,8 @@ RUN     apk add --update nginx
 RUN     apk add --update openssl
 # Create a self signed certificate using OpenSSL
         # use X.509 standard
-
+RUN     apk add --update openrc
+##
 RUN     openssl req \
         # create a self signed certificate instead of a signing request
         -x509 \
@@ -36,8 +37,16 @@ COPY   ./conf/nginx-self-signed.conf /etc/nginx/snippets/self-signed.conf
 
 COPY   ./conf/nginx-ssl-params.conf /etc/nginx/snippets/ssl-params.conf
 
-COPY   ./conf/nginx.conf /etc/nginx/sites-available/sshakya.42.fr
+COPY   ./conf/nginx.conf /etc/nginx/sites-available/$WP_SITE
 
+ARG     WP_SITE
+
+RUN     mkdir -p /etc/nginx/sites-enabled
+
+RUN     ln -s   /etc/nginx/sites-available/$WP_SITE \
+                /etc/nginx/sites-enabled/$WP_SITE
+
+RUN     rc-update add nginx
 # Expose the port 443 (standard port for SSL)
 EXPOSE  443
 
