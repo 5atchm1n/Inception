@@ -42,17 +42,10 @@ ARG     MARIADB_USER_PWD
 ARG     WP_DB
 ARG     MARIADB_HOSTNAME
 # Download Wordpress to directory
-RUN     mkdir -p $WP_DIR/html
-# Change directory to wordpress dir
-RUN     wp core download --locale=en_US --path=$WP_DIR/html
-
+RUN     mkdir -p ${WP_DIR}/html
+RUN     wp core download --locale=en_US --path=${WP_DIR}/html
 # Setup wp_config file
-RUN     wp config create --path=$WP_DIR/html\
-                        --dbname=${WP_DB} \
-                        --dbuser=${MARIADB_USER} \
-                        --dbpass=$MARIADB_USER_PWD \
-                        --locale=en_EN
-RUN     wp db create
+COPY    ./conf/www.conf         ./$WP_DIR/html
 # Dockerfile variables
 ARG     WP_URL
 ARG     WP_ADMIN
@@ -61,11 +54,7 @@ ARG     WP_ADMIN_EMAIL
 ARG     WP_USER
 ARG     WP_USER_PWD
 ARG     WP_USER_EMAIL
+RUN     adduser -H -D -S nginx
+RUN     addgroup nginx
 # Install Wordpress via WP-CLI
-RUN     wp core install --path=$WP_DIR/html \
-                        --url=$WP_URL \
-                        --title=Inception \
-                        --admin_user=$WP_ADMIN \
-                        --admin_password=$WP_ADMIN_PWD \
-                        --admin_email=$WP_ADMIN_EMAIL \
-                        --user=<$WP_USER|$WP_USER_PWD|$WP_USER_EMAIL>
+ENTRYPOINT [ "sh", "-c", "php-fpm7" ]

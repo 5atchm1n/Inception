@@ -26,11 +26,9 @@ services:
   mariadb:
     environment:
       - WP_DB=${WP_DB}
-      - MARIADB_ROOT=${MARIADB_ROOT}
-      - MARIADB_ROOT_PWD=${MARIADB_ROOT_PWD}
       - MARIADB_USER=${MARIADB_USER}
       - MARIADB_USER_PWD=${MARIADB_USER_PWD}
-    container_name: MariaDB
+    container_name: mariadb
     build:
       context:  ./requirements/mariadb
     volumes:

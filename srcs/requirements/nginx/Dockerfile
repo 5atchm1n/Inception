@@ -39,6 +39,8 @@ COPY   ./conf/nginx-ssl-params.conf /etc/nginx/snippets/ssl-params.conf
 
 COPY   ./conf/nginx.conf /etc/nginx/sites-available/$WP_SITE
 
+COPY   ./conf/server.conf /etc/nginx/nginx.conf
+
 ARG     WP_SITE
 
 RUN     mkdir -p /etc/nginx/sites-enabled
@@ -50,4 +52,4 @@ RUN     rc-update add nginx
 # Expose the port 443 (standard port for SSL)
 EXPOSE  443
 
-CMD     ["nginx", "-g", "deamon off;"]
+CMD     ["sh", "-c", "nginx"]
