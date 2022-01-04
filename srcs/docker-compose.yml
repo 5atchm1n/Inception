@@ -20,6 +20,7 @@ services:
       - wp-network
     ports:
       - "443:443"
+      - "80:80"
     depends_on:
       - mariadb
     restart: unless-stopped
@@ -44,6 +45,7 @@ services:
         # SITE
         - WP_URL=${WP_URL}
         - WP_DB=${WP_DB}
+        - WP_DIR=${WP_DIR}
         - WP_SITE=${WP_SITE}
         - WP_SITE_TITLE=${WP_SITE_TITLE}
         # USERS

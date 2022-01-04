@@ -31,17 +31,17 @@ RUN     openssl req \
         # Generate a Diffie Helman group to increase security
         # ensures Perfect Forward Secrecy (Wikipedia)
         # Generated key will be 4096 bits
-RUN     openssl dhparam -out /etc/nginx/dhparam.pem 1048
+RUN     openssl dhparam -out /etc/nginx/dhparam.pem 2048
+
+ARG     WP_SITE
 
 COPY   ./conf/nginx-self-signed.conf /etc/nginx/snippets/self-signed.conf 
 
 COPY   ./conf/nginx-ssl-params.conf /etc/nginx/snippets/ssl-params.conf
 
-COPY   ./conf/nginx.conf /etc/nginx/sites-available/$WP_SITE
+COPY   ./conf/nginx.conf /etc/nginx/sites-available/${WP_SITE}
 
 COPY   ./conf/server.conf /etc/nginx/nginx.conf
-
-ARG     WP_SITE
 
 RUN     mkdir -p /etc/nginx/sites-enabled
 
@@ -51,5 +51,6 @@ RUN     ln -s   /etc/nginx/sites-available/$WP_SITE \
 RUN     rc-update add nginx
 # Expose the port 443 (standard port for SSL)
 EXPOSE  443
+EXPOSE  80
 
 CMD     ["sh", "-c", "nginx"]

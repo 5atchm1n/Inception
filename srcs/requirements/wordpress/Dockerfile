@@ -45,7 +45,7 @@ ARG     MARIADB_HOSTNAME
 RUN     mkdir -p ${WP_DIR}/html
 RUN     wp core download --locale=en_US --path=${WP_DIR}/html
 # Setup wp_config file
-COPY    ./conf/www.conf         ./$WP_DIR/html
+COPY    ./conf/wp-config.php         ${WP_DIR}/html/
 # Dockerfile variables
 ARG     WP_URL
 ARG     WP_ADMIN
