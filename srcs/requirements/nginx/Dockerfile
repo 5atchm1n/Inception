@@ -10,8 +10,6 @@ RUN     apk add --update nginx
 RUN     apk add --update openssl
 # Create a self signed certificate using OpenSSL
         # use X.509 standard
-RUN     apk add --update openrc
-##
 RUN     openssl req \
         # create a self signed certificate instead of a signing request
         -x509 \
@@ -31,26 +29,17 @@ RUN     openssl req \
         # Generate a Diffie Helman group to increase security
         # ensures Perfect Forward Secrecy (Wikipedia)
         # Generated key will be 4096 bits
-RUN     openssl dhparam -out /etc/nginx/dhparam.pem 2048
-
-ARG     WP_SITE
-
-COPY   ./conf/nginx-self-signed.conf /etc/nginx/snippets/self-signed.conf 
+#RUN     openssl dhparam -out /etc/nginx/dhparam.pem 2048
 
 COPY   ./conf/nginx-ssl-params.conf /etc/nginx/snippets/ssl-params.conf
 
-COPY   ./conf/nginx.conf /etc/nginx/sites-available/${WP_SITE}
+COPY   ./conf/wp-site.conf /etc/nginx/http.d/default.conf
 
-COPY   ./conf/server.conf /etc/nginx/nginx.conf
+COPY   ./conf/nginx.conf /etc/nginx/nginx.conf
 
-RUN     mkdir -p /etc/nginx/sites-enabled
-
-RUN     ln -s   /etc/nginx/sites-available/$WP_SITE \
-                /etc/nginx/sites-enabled/$WP_SITE
-
-RUN     rc-update add nginx
 # Expose the port 443 (standard port for SSL)
-EXPOSE  443
-EXPOSE  80
+EXPOSE 443
 
-CMD     ["sh", "-c", "nginx"]
+EXPOSE 80
+
+CMD     ["nginx"]

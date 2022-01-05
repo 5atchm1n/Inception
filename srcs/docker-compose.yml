@@ -25,10 +25,6 @@ services:
       - mariadb
     restart: unless-stopped
   mariadb:
-    environment:
-      - WP_DB=${WP_DB}
-      - MARIADB_USER=${MARIADB_USER}
-      - MARIADB_USER_PWD=${MARIADB_USER_PWD}
     container_name: mariadb
     build:
       context:  ./requirements/mariadb
@@ -42,28 +38,11 @@ services:
     build:
       context:  ./requirements/wordpress
       args:
-        # SITE
-        - WP_URL=${WP_URL}
-        - WP_DB=${WP_DB}
         - WP_DIR=${WP_DIR}
-        - WP_SITE=${WP_SITE}
-        - WP_SITE_TITLE=${WP_SITE_TITLE}
-        # USERS
-        - WP_ADMIN=${WP_ADMIN}
-        - WP_ADMIN_PWD=${WP_ADMIN_PWD}
-        - WP_ADMIN_EMAIL=${WP_ADMIN_EMAIL}
-        - WP_USER=${WP_USER}
-        - WP_USER_PWD=${WP_USER_PWD}
-        - WP_USER_EMAIL=${WP_USER_EMAIL}
-        # DATABASE ARGS
-        - MARIADB_USER=${MARIADB_USER}
-        - MARIADB_USER_PWD=${MARIADB_USER_PWD}
-        - MARIADB_HOSTNAME=${MARIADB_HOSTNAME}
     volumes:
-    - wordpress-volume:/var/www/${WP_SITE}
+      - wordpress-volume:/var/www/${WP_SITE}
     networks:
       - wp-network
     depends_on:
-      - mariadb
       - nginx
     restart: unless-stopped

@@ -29,32 +29,17 @@ RUN     rc-update add mariadb
 # Set args that Dockerfile will get from compose yaml
 # Install Wordpress CLI tool
 RUN     wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
-# Make the .phar file executable
 RUN     chmod u+x wp-cli.phar
-# Move file to usr/local/bin for cli execution
 RUN     mv wp-cli.phar /usr/local/bin/wp
-# Test that CLI is functioning correctly
-RUN     wp --info
-# Create directory for wordpress
-ARG     WP_DIR
-ARG     MARIADB_USER
-ARG     MARIADB_USER_PWD
-ARG     WP_DB
-ARG     MARIADB_HOSTNAME
+# Uncomment to test that CLI is functioning correctly
+#RUN     wp --info
 # Download Wordpress to directory
+ARG     WP_DIR
 RUN     mkdir -p ${WP_DIR}/html
 RUN     wp core download --locale=en_US --path=${WP_DIR}/html
-# Setup wp_config file
-COPY    ./conf/wp-config.php         ${WP_DIR}/html/
-# Dockerfile variables
-ARG     WP_URL
-ARG     WP_ADMIN
-ARG     WP_ADMIN_PWD
-ARG     WP_ADMIN_EMAIL
-ARG     WP_USER
-ARG     WP_USER_PWD
-ARG     WP_USER_EMAIL
-RUN     adduser -H -D -S nginx
-RUN     addgroup nginx
+# ADD MaridDB [SQL] credentials to php-fpm config
+RUN     adduser -H -D -S nginx && addgroup nginx && chown -R nginx:nginx ${WP_DIR}
+COPY	./tools /install
+RUN		chmod -R 750 install
 # Install Wordpress via WP-CLI
-ENTRYPOINT [ "sh", "-c", "php-fpm7" ]
+ENTRYPOINT [ "sh", "install/run.sh" ]
