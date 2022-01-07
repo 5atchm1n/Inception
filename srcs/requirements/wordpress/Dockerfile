@@ -40,6 +40,7 @@ RUN     wp core download --locale=en_US --path=${WP_DIR}/html
 # ADD MaridDB [SQL] credentials to php-fpm config
 RUN     adduser -H -D -S nginx && addgroup nginx && chown -R nginx:nginx ${WP_DIR}
 COPY	./tools /install
+COPY    ./conf/wp-config.php ${WP_DIR}/html/wp-config.php
 RUN		chmod -R 750 install
 # Install Wordpress via WP-CLI
 ENTRYPOINT [ "sh", "install/run.sh" ]
