@@ -32,6 +32,13 @@ services:
       - mariadb-volume:/var/lib/mysql
     networks:
       - wp-network
+    environment:
+      - MARIADB_HOST=${MARIADB_HOST}
+      - MARIADB_ROOT=${MARIADB_ROOT}
+      - MARIADB_ROOT_PWD=${MARIADB_ROOT_PWD}
+      - MARIADB_USER=${MARIADB_USER}
+      - MARIADB_USER_PWD=${MARIADB_USER_PWD}
+      - WP_DB=${WP_DB}
     restart: unless-stopped
   wordpress:
     container_name: wordpress

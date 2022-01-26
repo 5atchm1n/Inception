@@ -1,8 +1,28 @@
+#!/bin/sh
+
+if [ -f ".init_done" ]
+	then
+		echo init already done
+		/usr/bin/mysqld
+else
+
+sh -c "/usr/bin/mysqld_safe &" && sleep 20 && mariadb -u root << EOF
+-- change password access
+ALTER USER root@localhost IDENTIFIED VIA mysql_native_password;
+SET PASSWORD FOR 'root'@'localhost' = PASSWORD('${MARIADB_ROOT_PWD}');
+FLUSH PRIVILEGES;
+-- add password to admin user 
 DELETE FROM	mysql.user WHERE User='';
 DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');
 ALTER USER mysql@localhost IDENTIFIED VIA mysql_native_password;
-SET PASSWORD FOR 'mysql'@'localhost' = PASSWORD('db_root_pwd');
-CREATE DATABASE wp_db;
-CREATE USER 'wp_user'@'%' IDENTIFIED by 'wp_user_pwd';
-GRANT ALL PRIVILEGES ON wp_db.* TO wp_user@'%';
+SET PASSWORD FOR 'mysql'@'localhost' = PASSWORD('${MARIADB_ROOT_PWD}');
+-- Create Wordpress Database
 FLUSH PRIVILEGES;
+CREATE DATABASE ${WP_DB};
+CREATE USER ${MARIADB_USER}@'%' IDENTIFIED by ${MARIADB_USER_PWD};
+GRANT ALL PRIVILEGES ON ${WP_DB}.* TO ${MARIADB_USER_PWD}@'%';
+FLUSH PRIVILEGES;
+EOF
+
+touch .init_done
+fi

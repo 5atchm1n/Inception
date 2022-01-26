@@ -23,8 +23,11 @@ COPY	conf/mariadb.conf /etc/my.cnf.d/mariadb-server.cnf
 # Database setup
 COPY	conf/mariadb.init   /init.sql
 
-RUN sh -c "/usr/bin/mysqld_safe &" && \
-  sleep 5 && \
-  mariadb -u root < init.sql
+RUN		chmod +x init.sql
 
-ENTRYPOINT  ["sh", "-c", "/usr/bin/mysqld"]
+ENTRYPOINT		"./init.sql"
+# && \
+#  sleep 20 && \
+#  mariadb -u root < init.sql
+
+#ENTRYPOINT  ["sh", "-c", "/usr/bin/mysqld"]
