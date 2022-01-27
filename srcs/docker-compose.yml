@@ -46,18 +46,19 @@ services:
     build:
       context:  ./requirements/wordpress
       args:
-      # MARIADB
         - WP_DIR=${WP_DIR}
-        - WP_DB=${WP_DB}
-        - MARIADB_USER=${MARIADB_USER}
-        - MARIADB_USER_PWD=${MARIADB_USER_PWD}
-        - MARIADB_HOST=${MARIADB_HOST}
     environment:
+      ## Wordpress Access
       - WP_DIR=${WP_DIR}
       - WP_URL=${WP_URL}
       - WP_ADMIN=${WP_ADMIN}
-      - WP_ADMIN=${WP_ADMIN_PWD}
+      - WP_ADMIN_PWD=${WP_ADMIN_PWD}
       - WP_ADMIN_EMAIL=${WP_ADMIN_EMAIL}
+      ## Mariadb Access
+      - WP_DB=${WP_DB}
+      - MARIADB_USER=${MARIADB_USER}
+      - MARIADB_USER_PWD=${MARIADB_USER_PWD}
+      - MARIADB_HOST=${MARIADB_HOST}
     volumes:
       - wordpress-volume:${WP_DIR}
     networks:

@@ -1,20 +1,36 @@
 #!/bin/sh
 
+# Check if this is the initial setup using a temp file .install
 if [ -e .install ]
     then
         echo "Wordpress is installed"
         echo "Skipping wp core install"
     else
-        wp core install --path=${WP_DIR}/html \
+			# Wait for MARIADB container
+			sleep 5;
+			# Check that the connection is established using
+			# mysqladmin ping
+			if ! mysqladmin --host=$MARIADB_HOST \
+						--user=$MARIADB_USER \
+						--password=$MARIADB_USER_PWD \
+						--wait=30 ping > /dev/null ; then
+						echo "ERROR : SQL not connected"
+						exit 1;
+			else
+			# Install Wordpress using the CLI
+			wp core install --path=${WP_DIR}/html \
         		        --url=${WP_URL} \
         		        --title=Inception \
         		        --admin_user=${WP_ADMIN} \
         		        --admin_password=${WP_ADMIN_PWD} \
         		        --admin_email=${WP_ADMIN_EMAIL} \
 				        --skip-email
-        touch .install
+			# create a temp file to indicate install is success full
+			touch .install
+			fi
 fi
 
+# Start PHP-FPM
 php-fpm7
 
 # END
