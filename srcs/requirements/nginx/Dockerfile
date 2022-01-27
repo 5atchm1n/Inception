@@ -40,6 +40,7 @@ COPY   ./conf/nginx.conf /etc/nginx/nginx.conf
 # Expose the port 443 (standard port for SSL)
 EXPOSE 443
 
-EXPOSE 80
+# Use for testing
+#EXPOSE 80
 
 CMD     ["nginx"]

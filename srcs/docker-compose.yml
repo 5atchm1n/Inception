@@ -30,8 +30,17 @@ services:
       context:  ./requirements/mariadb
     volumes:
       - mariadb-volume:/var/lib/mysql
+    environment:
+      - WP_DB=${WP_DB}
+      - MARIADB_ADMIN=${MARIADB_ADMIN}
+      - MARIADB_ROOT_PWD=${MARIADB_ROOT_PWD}
+      - MARIADB_ADMIN_PWD=${MARIADB_ADMIN_PWD}
+      - MARIADB_USER=${MARIADB_USER}
+      - MARIADB_USER_PWD=${MARIADB_USER_PWD}
     networks:
       - wp-network
+    depends_on:
+      - wordpress
     restart: unless-stopped
   wordpress:
     container_name: wordpress
@@ -43,6 +52,4 @@ services:
       - wordpress-volume:/var/www/${WP_SITE}
     networks:
       - wp-network
-    depends_on:
-      - nginx
     restart: unless-stopped
