@@ -1,28 +1,32 @@
 #!/bin/sh
 
-if [ -f ".init_done" ]
-	then
-		echo init already done
-		/usr/bin/mysqld
+# Check if initial setup is done using temp file
+if [ -f ".init_done" ]; then
+    echo "init done"
+	# start mysql/mariadb
+    /usr/bin/mysqld
 else
-
-sh -c "/usr/bin/mysqld_safe &" && sleep 20 && mariadb -u root << EOF
--- change password access
-ALTER USER root@localhost IDENTIFIED VIA mysql_native_password;
-SET PASSWORD FOR 'root'@'localhost' = PASSWORD('${MARIADB_ROOT_PWD}');
-FLUSH PRIVILEGES;
--- add password to admin user 
-DELETE FROM	mysql.user WHERE User='';
-DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');
-ALTER USER mysql@localhost IDENTIFIED VIA mysql_native_password;
-SET PASSWORD FOR 'mysql'@'localhost' = PASSWORD('${MARIADB_ROOT_PWD}');
--- Create Wordpress Database
-FLUSH PRIVILEGES;
-CREATE DATABASE ${WP_DB};
-CREATE USER ${MARIADB_USER}@'%' IDENTIFIED by ${MARIADB_USER_PWD};
-GRANT ALL PRIVILEGES ON ${WP_DB}.* TO ${MARIADB_USER_PWD}@'%';
-FLUSH PRIVILEGES;
-EOF
-
-touch .init_done
+    echo "init not done"
+    echo "start mariadb and setup"
+	
+	# use envsubst to set passwords and users
+	# into the init.sql script
+    envsubst < init_var.sql > init.sql
+	
+	# Start mysql in safe mode
+	/usr/bin/mysqld_safe &
+	sleep 5
+	
+	# Run init.sql script
+    mariadb -u root < init.sql
+	
+	# create .init file
+    touch .init_done
+    echo "init setup done"
+    echo "remove init.sql"
+	rm init.sql
+    echo "start mariadb"
+	
+	# Start MYSQL
+    /usr/bin/mysqld
 fi

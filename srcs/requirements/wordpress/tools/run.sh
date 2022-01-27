@@ -1,31 +1,36 @@
 #!/bin/sh
 
-STUDENT_LOGIN=sshakya
-WP_SITE=${STUDENT_LOGIN}.42.fr
-WP_DIR=/var/www/${WP_SITE}
-
-if [ -e ${WP_DIR}/html/wp-config.php ]
-	then
-		echo "wp-config exists"
-		echo "Skipping wp config create"
-	else
-        sh -c /install/config-create.sh;
-fi
-
-if [ -e ${WP_DIR}/.install ]
+# Check if this is the initial setup using a temp file .install
+if [ -e .install ]
     then
         echo "Wordpress is installed"
         echo "Skipping wp core install"
     else
-        sh -c /install/install-wp.sh;
-        touch ${WP_DIR}/.install
+			# Wait for MARIADB container
+			sleep 5;
+			# Check that the connection is established using
+			# mysqladmin ping
+			if ! mysqladmin --host=$MARIADB_HOST \
+						--user=$MARIADB_USER \
+						--password=$MARIADB_USER_PWD \
+						--wait=30 ping > /dev/null ; then
+						echo "ERROR : SQL not connected"
+						exit 1;
+			else
+			# Install Wordpress using the CLI
+			wp core install --path=${WP_DIR}/html \
+        		        --url=${WP_URL} \
+        		        --title=Inception \
+        		        --admin_user=${WP_ADMIN} \
+        		        --admin_password=${WP_ADMIN_PWD} \
+        		        --admin_email=${WP_ADMIN_EMAIL} \
+				        --skip-email
+			# create a temp file to indicate install is success full
+			touch .install
+			fi
 fi
 
-echo "Removing install scripts"
-rm -rf /install/config-create.sh
-rm -rf /install/install-wp.sh
-echo "Starting php-fpm7"
-
+# Start PHP-FPM
 php-fpm7
 
 # END

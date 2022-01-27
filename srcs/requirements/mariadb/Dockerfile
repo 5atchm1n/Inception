@@ -1,11 +1,11 @@
 ## MARIADB CONTAINER
 # Running Alpine linus to reduce overheads
-# Current latest stabel version is 3.14
-FROM    alpine:3.14
+# Current latest stabel version is 3.15
+FROM    alpine:3.15
 # Alpine package manager APK
 RUN     apk update
 # Install and update MariaDB latest
-RUN     apk add --update mariadb mariadb-client 
+RUN     apk add --update mariadb mariadb-client gettext
 # Create runtime directory on Docker volume
 RUN     mkdir -p /var/lib/mysql/run
 RUN     mkdir -p /run/mysqld
@@ -21,13 +21,8 @@ RUN     chown -R mysql:mysql /run/mysqld
 # Copy conf and init files to server
 COPY	conf/mariadb.conf /etc/my.cnf.d/mariadb-server.cnf
 # Database setup
-COPY	conf/mariadb.init   /init.sql
+COPY	conf/mariadb.init   /init.sh
+COPY	conf/init.sql   /init_var.sql
+RUN   chmod +x init.sh
 
-RUN		chmod +x init.sql
-
-ENTRYPOINT		"./init.sql"
-# && \
-#  sleep 20 && \
-#  mariadb -u root < init.sql
-
-#ENTRYPOINT  ["sh", "-c", "/usr/bin/mysqld"]
+ENTRYPOINT ["./init.sh"]
