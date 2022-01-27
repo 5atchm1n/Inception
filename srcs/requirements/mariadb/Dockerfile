@@ -5,7 +5,7 @@ FROM    alpine:3.14
 # Alpine package manager APK
 RUN     apk update
 # Install and update MariaDB latest
-RUN     apk add --update mariadb mariadb-client 
+RUN     apk add --update mariadb mariadb-client gettext
 # Create runtime directory on Docker volume
 RUN     mkdir -p /var/lib/mysql/run
 RUN     mkdir -p /run/mysqld
@@ -21,10 +21,9 @@ RUN     chown -R mysql:mysql /run/mysqld
 # Copy conf and init files to server
 COPY	conf/mariadb.conf /etc/my.cnf.d/mariadb-server.cnf
 # Database setup
-COPY	conf/mariadb.init   /init.sql
+COPY	conf/mariadb.init   /init.sh
+COPY	conf/init.sql   /init.sql
 
-RUN sh -c "/usr/bin/mysqld_safe &" && \
-  sleep 5 && \
-  mariadb -u root < init.sql
+RUN   chmod +x init.sh
 
-ENTRYPOINT  ["sh", "-c", "/usr/bin/mysqld"]
+ENTRYPOINT ["./init.sh"]

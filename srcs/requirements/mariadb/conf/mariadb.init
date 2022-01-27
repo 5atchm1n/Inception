@@ -1,8 +1,17 @@
-DELETE FROM	mysql.user WHERE User='';
-DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');
-ALTER USER mysql@localhost IDENTIFIED VIA mysql_native_password;
-SET PASSWORD FOR 'mysql'@'localhost' = PASSWORD('db_root_pwd');
-CREATE DATABASE wp_db;
-CREATE USER 'wp_user'@'%' IDENTIFIED by 'wp_user_pwd';
-GRANT ALL PRIVILEGES ON wp_db.* TO wp_user@'%';
-FLUSH PRIVILEGES;
+#!/bin/sh
+
+if [ -f ".init_done" ]; then
+    echo "init done"
+    /usr/bin/mysqld
+else
+    echo "init not done"
+    echo "start mariadb and setup"
+    envsubst < init.sql > init.sql
+    /usr/bin/mysqld_safe &
+    sleep 5
+    mariadb -u root < init.sql
+    touch .init_done
+    echo "init setup done"
+    echo "start mariadb"
+    /usr/bin/mysqld
+fi

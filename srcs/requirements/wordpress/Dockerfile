@@ -30,23 +30,10 @@ RUN     mv wp-cli.phar /usr/local/bin/wp
 ARG     WP_DIR
 RUN     mkdir -p ${WP_DIR}/html
 RUN     wp core download --locale=en_US --path=${WP_DIR}/html
-# Add Mariadb credentials
-ARG     MARIADB_HOST
-ARG     MARIADB_USER
-ARG     MARIADB_USER_PWD
-ARG     WP_DB
-
-RUN     echo "env[MARIADB_HOST] = ${MARIADB_HOST}" >> /etc/php7/php-fpm.d/www.conf
-RUN	    echo "env[MARIADB_USER] = ${MARIADB_USER}" >> /etc/php7/php-fpm.d/www.conf
-RUN	    echo "env[MARIADB_USER_PWD] = ${MARIADB_USER_PWD}" >> /etc/php7/php-fpm.d/www.conf
-RUN	    echo "env[WP_DB] = ${WP_DB}" >> /etc/php7/php-fpm.d/www.conf
-# Copy wordpress config file
-COPY    ./conf/wp-config.php ${WP_DIR}/html
-# Create nginx user and assign 
-RUN     adduser -H -D -S nginx && addgroup nginx
-RUN     chown -R nginx:nginx /var/www
-# Copy entrypoint tools
-COPY	./tools/run.sh /run.sh
-RUN		chmod -R 750 run.sh
-# Run php-fpm
-ENTRYPOINT [ "sh", "run.sh" ]
+# ADD MaridDB [SQL] credentials to php-fpm config
+RUN     adduser -H -D -S nginx && addgroup nginx && chown -R nginx:nginx ${WP_DIR}
+COPY	./tools /install
+COPY    ./conf/wp-config.php ${WP_DIR}/html/wp-config.php
+RUN		chmod -R 750 install
+# Install Wordpress via WP-CLI
+ENTRYPOINT [ "sh", "install/run.sh" ]
