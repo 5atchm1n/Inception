@@ -1,13 +1,17 @@
 # NGINX CONTAINER
 # Running Apline Linux to reduce overheads
 # Current latest version is 3.14 (stable)
-FROM    alpine:3.14
+FROM    alpine:3.15
 # Package manager for Alpine is apk
 RUN     apk update
 # Install and update to latest NGINX
 RUN     apk add --update nginx
 # Install and update OpenSSL
 RUN     apk add --update openssl
+
+RUN     mkdir -p /etc/ssl/private
+
+RUN     mkdir -p /etc/ssl/certs
 # Create a self signed certificate using OpenSSL
         # use X.509 standard
 RUN     openssl req \
