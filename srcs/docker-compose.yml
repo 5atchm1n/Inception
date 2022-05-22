@@ -12,8 +12,6 @@ services:
     container_name: nginx
     build:
       context:  ./requirements/nginx
-      args:
-        - WP_SITE=${WP_SITE}
     volumes:
       - wordpress-volume:/var/www/${WP_SITE}
     networks:
@@ -24,6 +22,7 @@ services:
       - mariadb
       - wordpress
     restart: unless-stopped
+  
   mariadb:
     container_name: mariadb
     build:
@@ -40,6 +39,7 @@ services:
     networks:
       - wp-network
     restart: unless-stopped
+  
   wordpress:
     container_name: wordpress
     build:
@@ -58,6 +58,10 @@ services:
       - MARIADB_USER=${MARIADB_USER}
       - MARIADB_USER_PWD=${MARIADB_USER_PWD}
       - MARIADB_HOST=${MARIADB_HOST}
+      ## Wordpress User
+      - WP_USER=${WP_USER}
+      - WP_USER_PWD=${WP_USER_PWD}
+      - WP_USER_EMAIL=${WP_USER_EMAIL}
     volumes:
       - wordpress-volume:${WP_DIR}
     networks:

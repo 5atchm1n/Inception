@@ -28,8 +28,17 @@ if [ -e .install ]
 			# create a temp file to indicate install is success full
 			touch .install
 			fi
+			if [ -e .install ]
+			then
+				echo "Adding WP user"
+				wp user create	--path=${WP_DIR}/html \
+								${WP_USER} ${WP_USER_EMAIL} \
+								--user_pass=${WP_USER_PWD} \
+								--role=contributor
+			fi
 fi
 
+echo "Start PHP-FPM"
 # Start PHP-FPM
 php-fpm7
 
