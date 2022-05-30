@@ -2,7 +2,15 @@ version: '3.8'
 
 volumes:
   mariadb-volume:
+    driver_opts:
+      device: /home/sshakya/data/db_data
+      o: bind
+      type: none
   wordpress-volume:
+    driver_opts:
+      device: /home/sshakya/data/wp_data
+      o: bind
+      type: none
 
 networks:
   wp-network:
