@@ -94,7 +94,9 @@ services:
       - wp-network
     restart: unless-stopped
     environment:
-      - FTP_USR=${FTP_USER}
+      - FTP_USER=${FTP_USER}
       - FTP_PWD=${FTP_PWD}
       - WP_DIR=${WP_DIR}
+    depends_on:
+      - wordpress
       

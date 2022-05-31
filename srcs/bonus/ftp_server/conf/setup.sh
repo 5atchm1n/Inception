@@ -6,7 +6,7 @@ if [ ! -f .setup ] ;
         echo "$FTP_USER:$FTP_PWD" | /usr/sbin/chpasswd &> /dev/null
         
 
-        echo $FTP_USR | tee -a /etc/vsftpd.userlist &> /dev/null
+        echo $FTP_USER | tee -a /etc/vsftpd.userlist &> /dev/null
 
         touch .setup
         rm setup.sh

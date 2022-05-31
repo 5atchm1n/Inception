@@ -16,8 +16,7 @@ COPY    ./conf/vsftpd.conf /etc/vsftpd/vsftpd.conf
 
 COPY    ./conf/setup.sh     /setup.sh
 
-RUN     adduser -H -D -S ${FTP_USER} \
-        && addgroup ${FTP_USER} \
+RUN     adduser -D -h ${WP_DIR} ${FTP_USER} \
         && chown -R ${FTP_USER}:${FTP_USER} ${WP_DIR} 
 
 EXPOSE  21
