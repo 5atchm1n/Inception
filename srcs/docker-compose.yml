@@ -77,3 +77,24 @@ services:
     depends_on:
       - mariadb
     restart: unless-stopped
+
+  ## BONUS PART
+  ftp-server:
+    container_name: ftp-server
+    build:
+      context:  bonus/ftp_server
+      args:
+        - WP_DIR=${WP_DIR}
+        - FTP_USER=${FTP_USER}
+    ports:
+      - "21:21"
+    volumes:
+      - "wordpress-volume:${WP_DIR}"
+    networks:
+      - wp-network
+    restart: unless-stopped
+    environment:
+      - FTP_USR=${FTP_USER}
+      - FTP_PWD=${FTP_PWD}
+      - WP_DIR=${WP_DIR}
+      
